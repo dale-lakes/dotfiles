@@ -3,6 +3,7 @@
 -- Add any additional options here
 local opt = vim.opt
 
+opt.tabstop = 4
 opt.wrap = true
 opt.breakindent = true
 opt.showbreak = "↳ "
