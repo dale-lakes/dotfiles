@@ -36,8 +36,6 @@ alias lal='eza -al --color=always --group-directories-first'
 alias lt='eza -aT --color=always --group-directories-first'
 alias wezterm='flatpak run org.wezfurlong.wezterm'
 
-# Zoxide (better cd)
-eval "$(zoxide init zsh)"
 
 # Tmux pane naming
 if [ -n "$TMUX" ]; then
@@ -69,8 +67,8 @@ if [[ "$(uname)" == "Linux" ]]; then
   # pnpm end
 fi
 
+eval "$(zoxide init zsh)"
+
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-
-alias claude="/home/dlakes/.claude/local/claude"
