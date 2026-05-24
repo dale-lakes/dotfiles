@@ -5,6 +5,7 @@ return {
       go = { "goimports", "gofmt" },
       perl = { "perltidy" },
       lua = { "stylua" },
+      yaml = { "yamlfmt" },
     },
   },
 }

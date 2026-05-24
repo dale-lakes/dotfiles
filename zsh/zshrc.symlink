@@ -27,7 +27,6 @@ unsetopt BEEP
 
 # aliases
 alias vim=nvim
-alias python=python3
 alias cat=bat
 alias ls='eza --color=always --group-directories-first'
 alias la='eza -a --color=always --group-directories-first'
@@ -35,6 +34,8 @@ alias ll='eza -l --color=always --group-directories-first'
 alias lal='eza -al --color=always --group-directories-first'
 alias lt='eza -aT --color=always --group-directories-first'
 alias wezterm='flatpak run org.wezfurlong.wezterm'
+
+export EDITOR=nvim
 
 
 # Tmux pane naming
@@ -65,10 +66,27 @@ if [[ "$(uname)" == "Linux" ]]; then
     *) export PATH="$PNPM_HOME:$PATH" ;;
   esac
   # pnpm end
+
+  export PATH=$PATH:/usr/lib/postgresql/18/bin
 fi
 
 eval "$(zoxide init zsh)"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+
+# [[ ! -f ~/.safe-chain/scripts/init-posix.sh ]] || source ~/.safe-chain/scripts/init-posix.sh
+#
+# source ~/.safe-chain/scripts/init-posix.sh # Safe-chain Zsh initialization script
+
+# opencode
+export PATH=/home/dlakes/.opencode/bin:$PATH
+
+# bun completions
+[ -s "/home/dlakes/.bun/_bun" ] && source "/home/dlakes/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
 
