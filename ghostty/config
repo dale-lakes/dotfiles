@@ -1,6 +1,0 @@
-theme = "kanagawabones"
-background = #000000
-font-family = "BerkeleyMono Nerd Font"
-
-config-file = ?/home/dlakes/.config/ghostty-linux.conf
-config-file = ?/home/dlakes/.config/ghostty-macos.conf
