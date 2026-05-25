@@ -139,7 +139,7 @@ install_dotfiles() {
 install_dotfiles
 
 # find the installers and run them iteratively
-for installer in $(find . -name "*install.sh"); do
+for installer in $(find . -name "*install.sh" -not -path "./install.sh"); do
   sh -c "${installer}"
 done
 

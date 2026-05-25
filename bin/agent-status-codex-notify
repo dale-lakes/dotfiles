@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# Codex notify hook for tmux agent status.
+#
+# Codex passes a JSON notification payload as an argument. For CLI/TUI sessions,
+# the documented completion event is "agent-turn-complete".
+
+set -u
+
+payload="${*: -1}"
+
+case "$payload" in
+  *'"type":"agent-turn-complete"'*|*'"type": "agent-turn-complete"'*)
+    agent-status done
+    ;;
+esac
+
+if [ -n "${CODEX_AGENT_STATUS_NOTIFY_PASSTHROUGH:-}" ]; then
+  # Optional machine-local compatibility hook, for example a desktop notifier.
+  # shellcheck disable=SC2086
+  $CODEX_AGENT_STATUS_NOTIFY_PASSTHROUGH "$payload" >/dev/null 2>&1 || true
+else
+  sky_client="$HOME/.codex/computer-use/Codex Computer Use.app/Contents/SharedSupport/SkyComputerUseClient.app/Contents/MacOS/SkyComputerUseClient"
+  if [ -x "$sky_client" ]; then
+    "$sky_client" turn-ended "$payload" >/dev/null 2>&1 || true
+  fi
+fi
+
+exit 0

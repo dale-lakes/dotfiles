@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Clear done status on the focused pane, then recalculate window status.
+
+set -u
+
+command -v tmux >/dev/null 2>&1 || exit 0
+
+target_pane="${1:-${TMUX_PANE:-}}"
+
+if [ -n "$target_pane" ]; then
+  status=$(tmux show-options -pqv -t "$target_pane" @agent_status 2>/dev/null)
+  [ "$status" = "✅" ] && tmux set-option -p -t "$target_pane" -u @agent_status 2>/dev/null
+fi
+
+panes=$(tmux list-panes -F '#{pane_id}' 2>/dev/null) || exit 0
+
+has_waiting=false
+has_working=false
+has_done=false
+
+for pane_id in $panes; do
+  status=$(tmux show-options -pqv -t "$pane_id" @agent_status 2>/dev/null)
+  case "$status" in
+    "💬") has_waiting=true ;;
+    "🤖") has_working=true ;;
+    "✅") has_done=true ;;
+  esac
+done
+
+if $has_waiting; then
+  tmux set-option -w @agent_status "💬" 2>/dev/null
+elif $has_working; then
+  tmux set-option -w @agent_status "🤖" 2>/dev/null
+elif $has_done; then
+  tmux set-option -w @agent_status "✅" 2>/dev/null
+else
+  tmux set-option -w -u @agent_status 2>/dev/null
+fi
+
+exit 0

@@ -8,6 +8,7 @@ set -s focus-events on
 set -sg escape-time 10
 set -g automatic-rename
 set -g mouse on
+set -g detach-on-destroy off
 set -s set-clipboard on
 
 set -g pane-border-status top
@@ -22,10 +23,20 @@ bind r source ~/.tmux.conf
 # vim keybindings and other vim-like actions
 setw -g mode-keys vi
 bind -T copy-mode-vi v send -X begin-selection
-bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "wl-copy"
+# Platform-aware clipboard
+if-shell "uname | grep -q Darwin" {
+    bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "pbcopy"
+    bind -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "pbcopy"
+} {
+    if-shell "[ -n \"$WAYLAND_DISPLAY\" ]" {
+        bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "wl-copy"
+        bind -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "wl-copy"
+    } {
+        bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "xclip -selection clipboard -in"
+        bind -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "xclip -selection clipboard -in"
+    }
+}
 bind P paste-buffer
-bind -T copy-mode-vi MouseDragEnd1Pane send-keys -X copy-pipe-and-cancel "wl-copy"
-# bind-key -t vi-copy y copy-pipe "pbcopy"
 
 # Window movement via hjkl
 bind-key j select-pane -D # Similar to 'C-w j' to navigate windows in Vim
@@ -38,9 +49,15 @@ bind-key l select-pane -R
 set -g base-index 1
 set -g pane-base-index 1
 
-# H and L to swap windows left/right, i.e. moving the tabs around.
-bind-key H swap-window -t -1\; select-window -t -1
-bind-key L swap-window -t +1\; select-window -t +1
+# < and > to swap windows left/right, i.e. moving the tabs around.
+bind-key < swap-window -t -1\; select-window -t -1
+bind-key > swap-window -t +1\; select-window -t +1
+
+# HJKL to swap panes directionally
+bind-key -r H swap-pane -t '{left-of}'
+bind-key -r L swap-pane -t '{right-of}'
+bind-key -r J swap-pane -t '{down-of}'
+bind-key -r K swap-pane -t '{up-of}'
 
 # When we add/remove windows, renumber them in sequential order.
 set -g renumber-windows on
@@ -76,6 +93,12 @@ set-option -gq allow-passthrough on
 # Get rid of empty quotes next to timestamp
 set-option -g status-right "%H:%M:%S %d-%b-%y"
 
+# Show agent status icon next to window name
+set -g window-status-format         '#I:#W#{?@agent_status, #{@agent_status},}#{?window_flags,#{window_flags}, }'
+set -g window-status-current-format '#I:#W#{?@agent_status, #{@agent_status},}#{?window_flags,#{window_flags}, }'
+# Clear completed agent status when you focus the pane
+set-hook -g pane-focus-in 'run-shell -b "$HOME/.local/bin/agent-status-clear-done #{pane_id}"'
+
 # List of plugins
 set -g @plugin 'tmux-plugins/tpm'
 set -g @plugin 'tmux-plugins/tmux-sensible'
@@ -87,4 +110,3 @@ if "test ! -d ~/.tmux/plugins/tpm" \
 
 # Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
 run '~/.tmux/plugins/tpm/tpm'
-
