@@ -4,13 +4,29 @@
 # Codex passes a JSON notification payload as an argument. For CLI/TUI sessions,
 # the documented completion event is "agent-turn-complete".
 
+if [ -z "${BASH_VERSION:-}" ]; then
+  exec bash "$0" "$@"
+fi
+
 set -u
 
-payload="${*: -1}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+
+payload=""
+if [ "$#" -gt 0 ]; then
+  for payload in "$@"; do
+    :
+  done
+fi
+
+agent_status_cmd="agent-status"
+if ! command -v "$agent_status_cmd" >/dev/null 2>&1 && [ -x "$SCRIPT_DIR/agent-status" ]; then
+  agent_status_cmd="$SCRIPT_DIR/agent-status"
+fi
 
 case "$payload" in
   *'"type":"agent-turn-complete"'*|*'"type": "agent-turn-complete"'*)
-    agent-status done
+    "$agent_status_cmd" done
     ;;
 esac
 
