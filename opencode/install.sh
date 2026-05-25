@@ -8,9 +8,10 @@ set -euo pipefail
 
 OPENCODE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
-TARGET_DIR="$CONFIG_HOME/opencode/plugins"
+TARGET_CONFIG_DIR="$CONFIG_HOME/opencode"
+TARGET_PLUGIN_DIR="$TARGET_CONFIG_DIR/plugins"
 
-mkdir -p "$TARGET_DIR"
+mkdir -p "$TARGET_PLUGIN_DIR"
 
 next_backup_path() {
   local dst=$1 backup counter
@@ -44,9 +45,16 @@ link_file() {
   printf '  [ OK ] linked %s to %s\n' "$src" "$dst"
 }
 
+for src in "$OPENCODE_DIR"/*.json; do
+  [ -f "$src" ] || continue
+
+  dst="$TARGET_CONFIG_DIR/$(basename "$src")"
+  link_file "$src" "$dst"
+done
+
 for src in "$OPENCODE_DIR"/plugins/*; do
   [ -f "$src" ] || continue
 
-  dst="$TARGET_DIR/$(basename "$src")"
+  dst="$TARGET_PLUGIN_DIR/$(basename "$src")"
   link_file "$src" "$dst"
 done
