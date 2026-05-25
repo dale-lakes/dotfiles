@@ -81,4 +81,4 @@ export PATH=/home/dlakes/.opencode/bin:$PATH
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-source /home/dlakes/.safe-chain/scripts/init-posix.sh # Safe-chain Zsh initialization script
+source $HOME/.safe-chain/scripts/init-posix.sh # Safe-chain Zsh initialization script
